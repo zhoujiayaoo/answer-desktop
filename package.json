@@ -1,0 +1,61 @@
+{
+  "name": "Answer",
+  "private": true,
+  "version": "0.1.0",
+  "homepage": "/",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "cross-env NODE_ENV=development nodemon --exec electron . watch ./ --ext .js,.html,.css,.vue",
+    "start:prod": "cross-env nodemon --exec electron . watch ./ --ext .js,.html,.css,.vue",
+    "electron:build": "vite build && electron-builder"
+  },
+  "dependencies": {
+    "electron-store": "^8.1.0",
+    "electron-win-state": "^1.1.22",
+    "element-plus": "^2.2.31",
+    "node-xlsx": "^0.21.0",
+    "normalize.css": "^8.0.1",
+    "pinia": "^2.0.30",
+    "stylus": "^0.59.0",
+    "vue": "^3.2.45",
+    "vue-router": "^4.0.13"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.0.0",
+    "cross-env": "^7.0.3",
+    "electron": "^23.1.0",
+    "electron-builder": "^23.6.0",
+    "nodemon": "^2.0.20",
+    "terser": "^5.16.4",
+    "vite": "^4.1.0"
+  },
+  "build": {
+    "appId": "com.my-website.my-app",
+    "productName": "Answer",
+    "copyright": "Copyright © 2021 kuari",
+    "asar": true,
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    },
+    "extraResources": {
+      "from": "./config.json",
+      "to": "../"
+    },
+    "files": [
+      "dist/**",
+      "electron/**/*",
+      "controller/**"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "dist_electron"
+    }
+  }
+}
