@@ -10,8 +10,10 @@ let currentAnswerStatus = ref(0)  // 答题状态：0-抢答，1-答题中，2-�
 let currentQuestion = ref({})
 let currentAnswerTeam = ""
 let teamRespond = ref('')
-
+let currentEditTeamInfo = ref({})    // 当前编辑队伍分数
+let currentEditTeamScore = ref(0)
 let teamData = ref([])
+let editTeamScoreDialogVisible = ref(false)
 
 
 // 获取题库
@@ -56,9 +58,10 @@ const jumpLink = (url) => {
 const handleKeyDown = (event) => {
   const k = event.key
   console.log("键盘点击：", k);
+  console.log(editTeamScoreDialogVisible);
   // 抢答
-  if (currentAnswerStatus.value == 0) {
-    if (event.key > 0 && event.key < teamData.value.length) {
+  if (currentAnswerStatus.value == 0 && editTeamScoreDialogVisible.value == false) {
+    if (event.key > 0 && event.key <= teamData.value.length) {
       currentAnswerStatus.value = 1
       console.log("当前抢答人：", event.key);
       teamData.value.forEach(item => {
@@ -103,23 +106,60 @@ const showAnswer = () => {
         break;
       }
     }
-    // 重新设置新值
-    let saveTeamData = []
-    teamData.value.forEach(item => {
-      let t = {
-        teamNumber: item.teamNumber,
-        teamName: item.teamName,
-        score: item.score
-      }
-      saveTeamData.push(t)
-    })
+    saveNewTeamData()
+    // // 重新设置新值
+    // let saveTeamData = []
+    // teamData.value.forEach(item => {
+    //   let t = {
+    //     teamNumber: item.teamNumber,
+    //     teamName: item.teamName,
+    //     score: item.score
+    //   }
+    //   saveTeamData.push(t)
+    // })
 
-    // 保存队伍数据
-    console.log("显示全部队伍当前数据", saveTeamData);
+    // // 保存队伍数据
+    // console.log("显示全部队伍当前数据", saveTeamData);
 
-    myApi.saveTeamDataApi(saveTeamData).then(() => {
-    })
+    // myApi.saveTeamDataApi(saveTeamData).then(() => { })
   }
+}
+
+// 行双击事件
+const doubleClickHandle = (row) => {
+  // console.log(row);
+  editTeamScoreDialogVisible.value = true
+  currentEditTeamInfo.value = row
+  currentEditTeamScore.value = row.score
+  // currentEditTeamInfo.value.score = row.score
+  // currentEditTeamInfo.value.teamName = row.teamName
+}
+
+// 编辑队伍分数确定事件处理
+const editTeamSocreConfirmHandle = () => {
+  editTeamScoreDialogVisible.value = false
+  // console.log(currentEditTeamInfo);
+  currentEditTeamInfo.value.score = Number(currentEditTeamScore.value)    // 设置新的值
+  // 更新表格信息到缓存
+  saveNewTeamData()
+}
+
+const saveNewTeamData = () => {
+  // 重新设置新值
+  let saveTeamData = []
+  teamData.value.forEach(item => {
+    let t = {
+      teamNumber: item.teamNumber,
+      teamName: item.teamName,
+      score: Number(item.score)
+    }
+    saveTeamData.push(t)
+  })
+
+  // 保存队伍数据
+  console.log("显示全部队伍当前数据", saveTeamData);
+
+  myApi.saveTeamDataApi(saveTeamData).then(() => { })
 }
 
 onMounted(() => {
@@ -153,8 +193,9 @@ onMounted(() => {
           <span>队伍排名</span>
         </div>
       </template>
-      <el-table class="teamTable" :key="teamTable" :data="teamData" style="width: 100%;font-size: 23px;line-height: 40px;"
-        :default-sort="{ prop: 'score', order: 'descending' }" :row-style="{ height: '90px' }" :cell-style="{}">
+      <el-table :data="teamData" style="width: 100%;font-size: 23px;line-height: 35px; "
+        :default-sort="{ prop: 'score', order: 'descending' }" :row-style="{ height: '75px' }" :cell-style="{}"
+        @cell-dblclick="doubleClickHandle">
         <el-table-column type="index" label="名次" width="100" />
         <el-table-column prop="teamNumber" label="编号" width="100" />
         <el-table-column prop="teamName" label="名称" width="280" />
@@ -186,6 +227,20 @@ onMounted(() => {
       </el-button-group>
     </div>
 
+    <el-dialog v-model="editTeamScoreDialogVisible" :title="'编辑【' + currentEditTeamInfo.teamName + '】分数'" width="30%"
+      center>
+      <el-input v-model="currentEditTeamScore" placeholder="Please input" />
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="editTeamScoreDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="editTeamSocreConfirmHandle">
+            确定
+          </el-button>
+        </span>
+      </template>
+    </el-dialog>
+
+
   </div>
 </template>
 
@@ -193,7 +248,7 @@ onMounted(() => {
 div.main
   height:100vh;
   .answer
-    width: 70%;
+    width: 65%;
     height: 85%;
     float: left;
     white-space: pre-line;
@@ -203,7 +258,7 @@ div.main
   .right
     float: right;
     height: 85%;
-    width: 29%;
+    width: 34%;
   .bottom
     float left
     width: 95%;  
