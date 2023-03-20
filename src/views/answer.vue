@@ -14,6 +14,8 @@ let currentEditTeamInfo = ref({})    // 当前编辑队伍分数
 let currentEditTeamScore = ref(0)
 let teamData = ref([])
 let editTeamScoreDialogVisible = ref(false)
+// 图片列表
+let questionImagesFileList = ref([])
 
 
 // 获取题库
@@ -47,7 +49,8 @@ const switchExam = (type) => {
   currentAnswerStatus.value = 0
   currentAnswerTeam = {}
   teamRespond.value = ''
-
+  questionImagesFileList.value = []
+  getQuestionImagesFileList(currentExamNumber + 1)    // 第一道题是1
 }
 
 const jumpLink = (url) => {
@@ -107,21 +110,6 @@ const showAnswer = () => {
       }
     }
     saveNewTeamData()
-    // // 重新设置新值
-    // let saveTeamData = []
-    // teamData.value.forEach(item => {
-    //   let t = {
-    //     teamNumber: item.teamNumber,
-    //     teamName: item.teamName,
-    //     score: item.score
-    //   }
-    //   saveTeamData.push(t)
-    // })
-
-    // // 保存队伍数据
-    // console.log("显示全部队伍当前数据", saveTeamData);
-
-    // myApi.saveTeamDataApi(saveTeamData).then(() => { })
   }
 }
 
@@ -162,9 +150,19 @@ const saveNewTeamData = () => {
   myApi.saveTeamDataApi(saveTeamData).then(() => { })
 }
 
+// 根据题号获取图片文件列表
+const getQuestionImagesFileList = (currentExamNumber) => {
+  console.log("当前题号：", currentExamNumber);
+  myApi.getQuestionImagesFileListApi(currentExamNumber).then((data) => {
+    console.log(data);
+    questionImagesFileList.value = data
+  })
+}
+
 onMounted(() => {
   getquestionBank()
   getTeamData()
+  getQuestionImagesFileList(currentExamNumber + 1)    // 根据题号获取图片
   window.addEventListener('keydown', handleKeyDown);
 });
 
@@ -183,6 +181,9 @@ onMounted(() => {
       <div class="exam">
         {{ currentQuestion.option }}
       </div>
+      <el-image v-for="imageBase64 in questionImagesFileList" :key="key"
+        style="width: 100px; height: 100px; margin-left: 5px;" :src="imageBase64" :zoom-rate="1.2"
+        :preview-src-list="questionImagesFileList" :initial-index="4" fit="cover" />
       <el-divider />
       <h1 v-if="currentAnswerStatus == 2">正确答案：<span style="color: blue">{{ currentQuestion.answer }}</span></h1>
     </el-card>

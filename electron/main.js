@@ -1,12 +1,12 @@
-const { app, BrowserWindow } = require("electron");
+const { app, BrowserWindow, protocol } = require("electron");
 const WinState = require("electron-win-state").default;
 const path = require("path");
 const importExcel = require(path.join(__dirname, "../controller/excelController"));
-const { getquestionBank, getTeamData, saveTeamData } = require("../controller/examController");
+const { getquestionBank, getTeamData, saveTeamData, getQuestionImagesFileList } = require("../controller/examController");
 
 const NODE_ENV = process.env.NODE_ENV;
-
 console.log("NODE_ENV: ", NODE_ENV);
+
 const createWindow = () => {
   const winState = new WinState({
     defaultWidth: 1800,
@@ -17,6 +17,7 @@ const createWindow = () => {
     // 自定义窗口状态
     ...winState.winOptions,
     webPreferences: {
+      webSecurity: false,
       preload: path.resolve(__dirname, "./preload.js"),
     },
     show: false,
@@ -41,6 +42,7 @@ const createWindow = () => {
   getquestionBank();
   getTeamData();
   saveTeamData();
+  getQuestionImagesFileList();
 };
 
 app.whenReady().then(() => {

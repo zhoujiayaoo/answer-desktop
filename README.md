@@ -25,3 +25,7 @@ npm run start
 ```bash
 npm run electron:build
 ```
+
+# 注意事项
+
+1、package.json 文件中，`chcp 65001 && `表示设置控制台打印字符集为 utf8（如果不设置，控制台打印会中文乱码），如果还是中文乱码，需要在控制台手动输入`chcp 65001`即可解决

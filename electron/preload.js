@@ -24,9 +24,16 @@ const saveTeamDataApi = async (teamData) => {
   return result;
 };
 
+// 获取题目图片文件
+const getQuestionImagesFileListApi = async (currentExamNumber) => {
+  let result = await ipcRenderer.invoke("on-getQuestionImagesFileList-event", currentExamNumber);
+  return result;
+};
+
 contextBridge.exposeInMainWorld("myApi", {
   importExcelApi,
   getquestionBankApi,
   getTeamDataApi,
   saveTeamDataApi,
+  getQuestionImagesFileListApi,
 });
