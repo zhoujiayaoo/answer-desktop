@@ -4,6 +4,7 @@ import router from '@/router';
 import { ref } from 'vue';
 const importQuestionNumber = ref(0)
 const importTeamNumber = ref(0)
+const calcScoreType = ref(2)
 
 // 导入excel
 const importExcelHandle = () => {
@@ -16,7 +17,7 @@ const importExcelHandle = () => {
 
 
 const jumpLink = (url) => {
-  router.push(url);
+  router.push(url + '/' + calcScoreType.value);
 }
 </script>
 
@@ -37,6 +38,10 @@ const jumpLink = (url) => {
           }}, 队伍数量：{{ importTeamNumber }}</el-card>
           <br>
           <el-button type="primary" style="width: 100%" @click="jumpLink('/answer')">进入答题</el-button>
+          <el-radio-group v-model="calcScoreType" class="ml-4">
+            <el-radio :label="1" size="large">自动计分</el-radio>
+            <el-radio :label="2" size="large">手动计分</el-radio>
+          </el-radio-group>
         </el-row>
       </div>
 

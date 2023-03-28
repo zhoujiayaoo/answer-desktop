@@ -17,7 +17,6 @@ const createWindow = () => {
     // 自定义窗口状态
     ...winState.winOptions,
     webPreferences: {
-      webSecurity: false,
       preload: path.resolve(__dirname, "./preload.js"),
     },
     show: false,

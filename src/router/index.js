@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory, createWebHistory } from "vue-router
 
 const routes = [
   {
-    path: "/answer",
+    path: "/answer/:calcScoreType",
     name: "answer",
     component: () => import("@/views/answer.vue"),
   },
